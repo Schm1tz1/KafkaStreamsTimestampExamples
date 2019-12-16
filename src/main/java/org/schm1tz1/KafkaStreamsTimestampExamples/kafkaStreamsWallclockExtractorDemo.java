@@ -32,15 +32,20 @@ public class kafkaStreamsWallclockExtractorDemo {
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
         // one can change the default extractor a below
-        //props.put(StreamsConfig.DEFAULT_TIMESTAMP_EXTRACTOR_CLASS_CONFIG, WallclockTimestampExtractor.class.getName());
+        props.put(StreamsConfig.DEFAULT_TIMESTAMP_EXTRACTOR_CLASS_CONFIG, WallclockTimestampExtractor.class.getName());
 
         final StreamsBuilder builder = new StreamsBuilder();
 
         // or just use Consumed.with(<TimestampExtractor>)
-        KStream<String, JSONObject> inStream = builder.stream("inputData", Consumed.with(new WallclockTimestampExtractor()));
+        KStream<String, JSONObject> inStreamDefault = builder.stream("inputData");
+        KStream<String, JSONObject> inStreamWallclock = builder.stream("inputData", Consumed.with(new WallclockTimestampExtractor()));
 
-        inStream
-                .map((k,v)->KeyValue.pair(k,v))
+        inStreamDefault
+                .map((k,v)->KeyValue.pair(k,v.put("timestampExtractor", "DEFAULT")))
+                .to("outputData");
+
+        inStreamWallclock
+                .map((k,v)->KeyValue.pair(k,v.put("timestampExtractor", "WALLCLOCK")))
                 .to("outputData");
 
         final KafkaStreams streams = new KafkaStreams(builder.build(), props);
