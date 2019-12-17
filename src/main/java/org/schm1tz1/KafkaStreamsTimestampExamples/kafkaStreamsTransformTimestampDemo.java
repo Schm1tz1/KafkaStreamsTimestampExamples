@@ -1,11 +1,8 @@
 package org.schm1tz1.KafkaStreamsTimestampExamples;
 
 import com.github.schm1tz1.kafka.serde.JsonSimpleSerde;
-import com.github.schm1tz1.kafka.serde.JsonSimpleSerializer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -25,7 +22,7 @@ public class kafkaStreamsTransformTimestampDemo {
 
         final Properties props = new Properties();
         props.put(StreamsConfig.APPLICATION_ID_CONFIG, "kafkaStreamsTransformTimestampDemo");
-        props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:29092");
         props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
         props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, JsonSimpleSerde.class.getName());
 
@@ -66,7 +63,7 @@ public class kafkaStreamsTransformTimestampDemo {
         @Override
         void forwardWrapper(String key, JSONObject value) {
             long newTimestamp = Long.parseLong(key);
-            System.out.println("changing timestamp to "+newTimestamp+" and forwarding -> "+this.getClass().getName()+", "+value+"\n\n");
+            System.out.println("changing timestamp to " + newTimestamp + " and forwarding -> " + this.getClass().getName() + ", " + value + "\n\n");
             context.forward(this.getClass().getName(), value, To.all().withTimestamp(newTimestamp));
         }
     }
@@ -83,7 +80,7 @@ public class kafkaStreamsTransformTimestampDemo {
         public KeyValue<String, JSONObject> transform(String _unusedKey_, JSONObject value) {
             System.out.println(String.format("received: %d (%s/%d/%d): %s", context.timestamp(), context.topic(), context.partition(), context.offset(), value));
 
-            Long timeNowInMillis = System.currentTimeMillis()+1; // add one millisecond to have a difference to context (just in case)
+            Long timeNowInMillis = System.currentTimeMillis() + 1; // add one millisecond to have a difference to context (just in case)
 
             Object metadataValue = value.get("metadata");
             JSONArray metadataArray = metadataValue instanceof JSONArray ? (JSONArray) metadataValue : new JSONArray();
@@ -97,7 +94,7 @@ public class kafkaStreamsTransformTimestampDemo {
         }
 
         void forwardWrapper(String key, JSONObject value) {
-            System.out.println("forwarding -> "+this.getClass().getName()+", "+value+"\n\n");
+            System.out.println("forwarding -> " + this.getClass().getName() + ", " + value + "\n\n");
             context.forward(this.getClass().getName(), value);
         }
 

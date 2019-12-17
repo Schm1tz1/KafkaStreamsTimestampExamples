@@ -17,7 +17,7 @@ public class generateExampleMessages {
 
     private static KafkaProducer createProducer() {
         Properties producerConfig = new Properties();
-        producerConfig.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        producerConfig.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:29092");
         producerConfig.put(ProducerConfig.CLIENT_ID_CONFIG, "generateExampleMessages");
         producerConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         producerConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSimpleSerializer.class.getName());
